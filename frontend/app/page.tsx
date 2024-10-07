@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Package2, Send, FileCode, Webhook, Image, Code2, Database, Radio, Coins } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import SendTransaction from '@/components/send-transaction';
 
 // Sidebar component
 const Sidebar = ({ activeItem, setActiveItem } : any) => {
@@ -30,16 +31,12 @@ const Sidebar = ({ activeItem, setActiveItem } : any) => {
           <span className="ml-2">{item.label}</span>
         </Button>
       ))}
-      <Button className="mt-auto" variant="outline">
-        Verify with World ID
-      </Button>
     </div>
   )
 }
 
 // Placeholder components for different transaction types
 const AskAgent = () => <div>Ask Agent Component</div>
-const SendTransaction = () => <div>Send Transaction Component</div>
 const DeployContract = () => <div>Deploy Contract Component</div>
 const ImageGenerator = () => <div>Image Generator Component</div>
 const DiscoverContract = () => <div>Discover Contract Component</div>
