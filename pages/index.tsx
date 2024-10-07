@@ -90,7 +90,8 @@ function SignDemo() {
     const { signMessage, signTransaction, address } = useWallet();
     const [message, setMessage] = useState('');
     const [signedMessage, setSignedMessage] = useState('');
-    const receiver = 'TMDKznuDWaZwfZHcM61FVFstyYNmK6Njk1';
+    // const receiver = 'TMDKznuDWaZwfZHcM61FVFstyYNmK6Njk1';
+    const [receiver, setReceiver] = useState('');
     const [open, setOpen] = useState(false);
 
     async function onSignMessage() {
@@ -98,8 +99,11 @@ function SignDemo() {
         setSignedMessage(res);
     }
 
+    console.log("address", address);
+
     async function onSignTransaction() {
-        const transaction = await tronWeb.transactionBuilder.sendTrx(receiver, tronWeb.toSun(0.000001), address);
+        // Address of the sender, amount, receiver's address
+        const transaction = await tronWeb.transactionBuilder.sendTrx(address, tronWeb.toSun(0.1), receiver);
         console.log(transaction);
 
         const signedTransaction = await signTransaction(transaction);
@@ -107,6 +111,39 @@ function SignDemo() {
         const res = await tronWeb.trx.sendRawTransaction(signedTransaction);
         setOpen(true);
     }
+
+
+    async function onSignTRC20Transaction() {
+        const trc20ContractAddress = "TQQg4EL8o1BSeKJY4MJ8TB8XK7xufxFBvK";//contract address USDT
+
+        // // Address of the sender, amount, receiver's address
+        // const transaction = await tronWeb.transactionBuilder.sendTrx(address, tronWeb.toSun(0.1), receiver);
+        // console.log(transaction);
+
+        // const signedTransaction = await signTransaction(transaction);
+        // // const signedTransaction = await tronWeb.trx.sign(transaction);
+        // const res = await tronWeb.trx.sendRawTransaction(signedTransaction);
+        // setOpen(true);
+
+        try {
+            let contract = await tronWeb.contract().at(trc20ContractAddress);
+            //Use send to execute a non-pure or modify smart contract method on a given smart contract that modify or change values on the blockchain.
+            // These methods consume resources(bandwidth and energy) to perform as the changes need to be broadcasted out to the network.
+            console.log("Contract", contract);
+
+            let result = await contract.transfer(
+                receiver, //address _to
+                tronWeb.toSun(0.1)   //amount
+            ).send({
+                feeLimit: 1000000
+            }).then(output => { console.log('- Output:', output, '\n'); });
+            console.log('result: ', result);
+        } catch (error) {
+            console.log("Error ", error);
+
+        }
+    }
+
     return (
         <div>
             <h2>Sign a message</h2>
@@ -126,7 +163,30 @@ function SignDemo() {
             <p style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', wordBreak: 'break-all' }}>
                 You can transfer 0.1 Trx to &nbsp;<i>{receiver}</i>&nbsp;by click the button.
             </p>
+            <TextField
+                size="small"
+                onChange={(e) => setReceiver(e.target.value)}
+                placeholder="input receiver address"
+                style={{ marginRight: '20px' }}
+            ></TextField>
             <Button onClick={onSignTransaction}>Transfer</Button>
+
+
+            <h2>Sign a Transaction for TRC 20 token</h2>
+            <p style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', wordBreak: 'break-all' }}>
+                You can transfer 0.1 Trx to &nbsp;<i>{receiver}</i>&nbsp;by click the button.
+            </p>
+            <TextField
+                size="small"
+                onChange={(e) => setReceiver(e.target.value)}
+                placeholder="input receiver address"
+                style={{ marginRight: '20px' }}
+            ></TextField>
+            <Button onClick={onSignTRC20Transaction}>Transfer TRC 20</Button>
+
+
+
+
             {open && (
                 <Alert onClose={() => setOpen(false)} severity="success" sx={{ width: '100%', marginTop: 1 }}>
                     Success! You can confirm your transfer on{' '}
