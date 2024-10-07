@@ -15,6 +15,13 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
+    "@tronweb3/tronwallet-abstract-adapter": "^1.1.7",
+    "@tronweb3/tronwallet-adapter-bitkeep": "^1.1.2",
+    "@tronweb3/tronwallet-adapter-ledger": "^1.1.9",
+    "@tronweb3/tronwallet-adapter-react-hooks": "^1.1.8",
+    "@tronweb3/tronwallet-adapter-react-ui": "^1.1.9",
+    "@tronweb3/tronwallet-adapter-tokenpocket": "^1.0.4",
+    "@tronweb3/tronwallet-adapters": "^1.2.4",
     "class-variance-authority": "^0.4.0",
     "clsx": "^1.2.1",
     "lucide-react": "0.105.0-alpha.4",
@@ -22,6 +29,7 @@
     "next-themes": "^0.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
     "sharp": "^0.31.3",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6"
