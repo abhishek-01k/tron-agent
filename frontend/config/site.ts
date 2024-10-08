@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Tron Agents",
-  description: "An agent to simplify your Tron Activities",
+  name: "Tron Defi Agent",
+  description: "An agent to simplify your Tron DeFi Activities",
   mainNav: [],
   links: {},
 }

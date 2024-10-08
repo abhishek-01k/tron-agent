@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import SendTransaction from '@/components/send-transaction';
 import DeployContracts from '@/components/deploy-contracts';
-import { AskAgent } from '@/components/ask-agent';
-// Sidebar component
+import  AskAgent  from '@/components/ask-agent';
+
 const Sidebar = ({ activeItem, setActiveItem } : any) => {
   const menuItems = [
     { icon: <Package2 className="w-4 h-4" />, label: 'Ask Agent', key: 'ask' },
