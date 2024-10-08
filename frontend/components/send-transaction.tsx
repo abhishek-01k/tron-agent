@@ -81,7 +81,7 @@ export default function SendTransaction() {
 
   const executeCommand = useCallback((command: Command) => {
     console.log(`Executing command: ${command.text.replace('{amount}', command.amount)}`)
-    
+
     if (command.type === 'swap' && command.text.toLowerCase().includes('sunswap')) {
       handleSunSwap(command);
     } else {
@@ -195,6 +195,13 @@ export default function SendTransaction() {
     const tokenAddresses: { [key: string]: string } = {
       'sTRX': 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb',
       'USDD': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+      'USDT': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+      'APENFT': 'TFczxzPhnThNSqr5by8tvxsdCFRRz6cPNq',
+      'SUN': 'TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S',
+      'BTC': 'TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9',
+      'WTRX': 'TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR',
+      'WETH': 'TXWkP3jLBqRGojUih1ShzNyDaN5Csnebok',
+      'HTX': 'TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6',
       // Add more token mappings as needed
     };
     return tokenAddresses[tokenSymbol] || '';
