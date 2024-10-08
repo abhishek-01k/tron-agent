@@ -5,6 +5,13 @@ import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { actions } from 'orchai-combinator-tron-sdk-v1';
+
+const justlend_dao_collateral_action = new actions.JustlendDAOSupply(
+    list cTokenAddress,
+    list EnableAsCol,
+    action justlend_dao collateral address
+)
 
 interface Command {
   id: number;
