@@ -46,28 +46,30 @@ export default function AskAgent() {
       <h2 className="text-2xl font-bold mb-2">Ask Tron Defi Agent</h2>
       <ScrollArea className="flex-grow mb-4 pr-4">
         {messages.map((message, index) => (
-          <Card key={index} className={`mb-4 ${message.role === 'user' ? 'bg-blue-900' : 'bg-gray-800'}`}>
-            <CardContent className="p-4">
-              <p className="font-semibold mb-2">{message.role === 'user' ? 'You' : 'Brian'}</p>
-              {message.role === 'assistant' ? (
-                <ReactMarkdown 
-                  className="prose prose-invert max-w-none"
-                  components={{
-                    h3: ({node, ...props}) => <h3 className="text-xl font-semibold mt-4 mb-2" {...props} />,
-                    p: ({node, ...props}) => <p className="mb-2" {...props} />,
-                    ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
-                    ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
-                    li: ({node, ...props}) => <li className="mb-1" {...props} />,
-                    a: ({node, ...props}) => <a className="text-blue-400 hover:underline" {...props} />,
-                  }}
-                >
-                  {message.content}
-                </ReactMarkdown>
-              ) : (
-                <p>{message.content}</p>
-              )}
-            </CardContent>
-          </Card>
+          <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <Card className={`max-w-[80%] ${message.role === 'user' ? 'bg-blue-900' : 'bg-gray-800'}`}>
+              <CardContent className="p-4">
+                <p className="font-semibold mb-2">{message.role === 'user' ? 'You' : '🤖 TronDefi Agent'}</p>
+                {message.role === 'assistant' ? (
+                  <ReactMarkdown 
+                    className="prose prose-invert max-w-none"
+                    components={{
+                      h3: ({node, ...props}) => <h3 className="text-xl font-semibold mt-4 mb-2" {...props} />,
+                      p: ({node, ...props}) => <p className="mb-2" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+                      li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                      a: ({node, ...props}) => <a className="text-blue-400 hover:underline" {...props} />,
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                ) : (
+                  <p>{message.content}</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         ))}
       </ScrollArea>
       <div className="mt-auto mb-6">
@@ -75,7 +77,7 @@ export default function AskAgent() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask TronDefi Agent a question..."
+            placeholder="Ask TronDefi Agent 🤖 a question..."
             className="flex-grow bg-gray-800 text-white border-gray-700"
           />
           <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
