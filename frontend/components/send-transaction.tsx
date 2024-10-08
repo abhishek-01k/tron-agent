@@ -81,8 +81,12 @@ export default function SendTransaction() {
 
   const executeCommand = useCallback((command: Command) => {
     console.log(`Executing command: ${command.text.replace('{amount}', command.amount)}`)
-    // Add specific logic for the protocol here
-    handleFunction({ amount: command.amount });
+    
+    if (command.type === 'swap' && command.text.toLowerCase().includes('sunswap')) {
+      handleSunSwap(command);
+    } else {
+      handleFunction({ amount: command.amount });
+    }
   }, [])
 
   const handleFunction = async ({
@@ -109,7 +113,6 @@ export default function SendTransaction() {
     }
 
   }
-
 
   const sunswapQuote = async ({
     fromToken,
@@ -138,16 +141,20 @@ export default function SendTransaction() {
 
   }
 
+  const handleSunSwap = async (command: Command) => {
+    const [fromToken, toToken] = command.text.match(/(\w+) to (\w+)/i)?.slice(1) || [];
+    if (!fromToken || !toToken) {
+      console.error("Invalid swap command format");
+      return;
+    }
 
-  const handleSunSwap = async () => {
-
-    const fromToken = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'
-    const toToken = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
-    const amountIn = 1000000
+    const fromTokenAddress = getTokenAddress(fromToken);
+    const toTokenAddress = getTokenAddress(toToken);
+    const amountIn = parseInt(command.amount) * 1e6; // Assuming 6 decimal places, adjust if needed
 
     const amountOutResponse = await sunswapQuote({
-      fromToken,
-      toToken,
+      fromToken: fromTokenAddress,
+      toToken: toTokenAddress,
       amountIn
     })
 
@@ -155,7 +162,6 @@ export default function SendTransaction() {
 
     try {
       if (tron) {
-
         const tronweb = tron.tronWeb;
         console.log("Amount Out >>>", amountOutResponse);
         let contract = await tronweb.contract(SunSwapABI, 'TJ4NNy8xZEqsowCBhLvZ45LCqPdGjkET5j')
@@ -163,12 +169,10 @@ export default function SendTransaction() {
 
         const { tokens, poolFees, poolVersions } = amountOutResponse
 
-        // added 3 hours in the timestamp
         const date = new Date();
         date.setHours(date.getHours() + 3);
         const timestamp = date.getTime();
         console.log(timestamp);
-
 
         const tx = await contract.swapExactInput(
           tokens,
@@ -183,10 +187,17 @@ export default function SendTransaction() {
     } catch (error) {
       console.log("Error in the swapping contract", error);
     }
+  }
 
-
-
-
+  // Helper function to get token addresses (you'll need to implement this)
+  const getTokenAddress = (tokenSymbol: string): string => {
+    // Implement a mapping of token symbols to their addresses
+    const tokenAddresses: { [key: string]: string } = {
+      'sTRX': 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb',
+      'USDD': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+      // Add more token mappings as needed
+    };
+    return tokenAddresses[tokenSymbol] || '';
   }
 
   return (
@@ -196,8 +207,6 @@ export default function SendTransaction() {
       <Button onClick={() => setIsModalOpen(true)} className="w-full mb-4">
         Query Commands
       </Button>
-
-      <Button onClick={handleSunSwap}>Sun Swap</Button>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-fit bg-gray-800 text-white">
