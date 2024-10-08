@@ -26,7 +26,7 @@ const initialQueryCommands: Command[] = [
   { id: 7, type: "swap", amount: "100", text: "Swap {amount} USDD to BTT on Sunswap" }
 ]
 
-const filterOptions = ['All', 'HTX DAO', 'stUSDT', 'Justlend', 'sTRX', 'Sunswap', 'Energy Rental', 'Sun Dapp Chain', 'ApeNFT', 'BitTorrent File System']
+const filterOptions = ['All', 'HTX DAO', 'stUSDT', 'Justlend', 'sTRX', 'Sunswap', 'Energy Rental', 'Sun Dapp', 'ApeNFT', 'BitTorrent File']
 
 const CommandItem: React.FC<{
   command: Command;
@@ -109,7 +109,7 @@ export default function SendTransaction() {
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="text-2xl font-bold mb-4">Send transactions with Web3 Agent (Tron Chain)</h2>
+      <h2 className="text-2xl font-bold mb-4">Send transactions with the Tron Defi Agent</h2>
 
       <Button onClick={() => setIsModalOpen(true)} className="w-full mb-4">
         Query Commands
