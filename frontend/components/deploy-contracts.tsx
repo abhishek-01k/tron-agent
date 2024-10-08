@@ -22,7 +22,7 @@ export default function ContractGenerator() {
   const [generatedContract, setGeneratedContract] = useState("")
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { signMessage , signTransaction} = useWallet();
+  const { signMessage , signTransaction , address} = useWallet();
 
   const contractContent = `// SPDX-License-Identifier: GPL-3.0
 
@@ -110,9 +110,6 @@ contract Owner {
       console.log('Compilation successful:', response.data)
 
       deployContract(response.data.abi, response.data.bytecode, response.data.contractName)
-      // You can store the bytecode and ABI in state if needed
-    //   setCompiledBytecode(response.data.bytecode)
-      // setCompiledABI(response.data.abi)
     } catch (error) {
       console.error('Compilation failed:', error.response?.data || error.message)
     }
@@ -123,18 +120,16 @@ contract Owner {
     try {
         const url = 'https://api.shasta.trongrid.io/wallet/deploycontract';
 
-        const res = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({
-                "abi": "[{\"constant\":false,\"inputs\":[{\"name\":\"key\",\"type\":\"uint256\"},{\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"key\",\"type\":\"uint256\"}],\"name\":\"get\",\"outputs\":[{\"name\":\"value\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]",
-                "bytecode": "608060405234801561001057600080fd5b5060de8061001f6000396000f30060806040526004361060485763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416631ab06ee58114604d5780639507d39a146067575b600080fd5b348015605857600080fd5b506065600435602435608e565b005b348015607257600080fd5b50607c60043560a0565b60408051918252519081900360200190f35b60009182526020829052604090912055565b600090815260208190526040902054905600a165627a7a72305820fdfe832221d60dd582b4526afa20518b98c2e1cb0054653053a844cf265b25040029",
-                "owner_address": "TJmmqjb1DK9TTZbQXzRQ2AuA94z4gKAPFh",
-                "name": "SomeContract",
-                "visible": true
-            })
-        })
+        const res = await axios.post(url, {
+            abi,
+            bytecode,
+            owner_address: address || "TJmmqjb1DK9TTZbQXzRQ2AuA94z4gKAPFh",
+            name,
+            visible: true
+        });
 
-        const response = await res.json();
+
+        const response = await res.data;
         console.log("Response: ", response);
 
         const signedTransaction = await signTransaction(response);
@@ -237,7 +232,7 @@ contract Owner {
                 </div>
               </>
             ) : (
-              <p className="text-2xl font-bold">Let's build something cool 😎</p>
+              <p className="text-2xl font-bold">Lets build something cool 😎</p>
             )}
           </div>
         </div>
