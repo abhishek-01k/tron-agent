@@ -6,12 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { actions } from 'orchai-combinator-tron-sdk-v1';
-
-const justlend_dao_collateral_action = new actions.JustlendDAOSupply(
-    list cTokenAddress,
-    list EnableAsCol,
-    action justlend_dao collateral address
-)
+import { tronWeb } from '../app/api/tronweb';
+import JustlendABI from '../config/JustlendABI.json';
 
 interface Command {
   id: number;
@@ -44,7 +40,7 @@ const CommandItem: React.FC<{
   }, [onAmountChange])
 
   return (
-    <div 
+    <div
       className={`py-2 px-4 hover:bg-gray-700 cursor-pointer ${isSelected ? 'bg-gray-1200' : ''}`}
       onClick={onSelect}
     >
@@ -68,13 +64,13 @@ export default function SendTransaction() {
   const [queryCommands, setQueryCommands] = useState(initialQueryCommands)
   const [selectedCommand, setSelectedCommand] = useState<Command | null>(null)
 
-  const filteredCommands = filter === 'All' 
-    ? queryCommands 
+  const filteredCommands = filter === 'All'
+    ? queryCommands
     : queryCommands.filter(cmd => cmd.text.toLowerCase().includes(filter.toLowerCase()))
 
   const handleAmountChange = useCallback((id: number, newAmount: string) => {
-    setQueryCommands(prevCommands => 
-      prevCommands.map(cmd => 
+    setQueryCommands(prevCommands =>
+      prevCommands.map(cmd =>
         cmd.id === id ? { ...cmd, amount: newAmount } : cmd
       )
     )
@@ -83,7 +79,33 @@ export default function SendTransaction() {
   const executeCommand = useCallback((command: Command) => {
     console.log(`Executing command: ${command.text.replace('{amount}', command.amount)}`)
     // Add specific logic for the protocol here
+    handleFunction({ amount: command.amount });
   }, [])
+
+  const handleFunction = async ({
+    amount
+  }: { amount: string }) => {
+    const tron = window.tron;
+    try {
+      if (tron) {
+        const tronWeb = tron.tronWeb;
+
+        const justlendContractAddress = "TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP";//contract address justlend
+        let contract = await tronWeb.contract(JustlendABI, justlendContractAddress);
+
+        console.log("Contract", contract);
+
+        let result = await contract.mint().send({
+          callValue: amount,
+        }).then(output => { console.log('- Output:', output, '\n'); });
+        console.log('result: ', result);
+      }
+    } catch (error) {
+      console.log("Error in sending txn", error);
+
+    }
+
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -94,17 +116,9 @@ export default function SendTransaction() {
       </Button>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-gray-800 text-white">
+        <DialogContent className="max-w-fit bg-gray-800 text-white">
           <DialogHeader>
             <DialogTitle>Query Commands</DialogTitle>
-            <Button 
-              variant="ghost" 
-              onClick={() => setIsModalOpen(false)}
-              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Button>
           </DialogHeader>
           <div className="flex space-x-2 mb-4">
             {filterOptions.map((option) => (
@@ -130,7 +144,7 @@ export default function SendTransaction() {
             ))}
           </div>
           {selectedCommand && (
-            <Button 
+            <Button
               onClick={() => {
                 executeCommand(selectedCommand)
                 setIsModalOpen(false)
