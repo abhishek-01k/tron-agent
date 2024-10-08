@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { actions } from 'orchai-combinator-tron-sdk-v1';
 import { tronWeb } from '../app/api/tronweb';
 import JustlendABI from '../config/JustlendABI.json';
+import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks';
+import { SunSwapABI } from '../config/SunSwapABI';
 
 interface Command {
   id: number;
@@ -63,6 +65,7 @@ export default function SendTransaction() {
   const [filter, setFilter] = useState('All')
   const [queryCommands, setQueryCommands] = useState(initialQueryCommands)
   const [selectedCommand, setSelectedCommand] = useState<Command | null>(null)
+  const { signMessage, signTransaction, address } = useWallet();
 
   const filteredCommands = filter === 'All'
     ? queryCommands
@@ -107,6 +110,85 @@ export default function SendTransaction() {
 
   }
 
+
+  const sunswapQuote = async ({
+    fromToken,
+    toToken,
+    amountIn
+  }: {
+    fromToken: string,
+    toToken: string,
+    amountIn: number
+  }) => {
+    try {
+      const res = await fetch(`https://rot.endjgfsv.link/swap/router?fromToken=${fromToken}&toToken=${toToken}&amountIn=${amountIn}&typeList=PSM,CURVE,CURVE_COMBINATION,WTRX,SUNSWAP_V1,SUNSWAP_V2,SUNSWAP_V3`, {
+        method: 'GET',
+      })
+
+      const response = await res.json()
+      console.log("Response", response);
+
+      const { data } = response
+      return data[0];
+
+    } catch (error) {
+      console.log("Error in fetching quote", error);
+
+    }
+
+  }
+
+
+  const handleSunSwap = async () => {
+
+    const fromToken = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'
+    const toToken = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
+    const amountIn = 1000000
+
+    const amountOutResponse = await sunswapQuote({
+      fromToken,
+      toToken,
+      amountIn
+    })
+
+    const tron = window.tron;
+
+    try {
+      if (tron) {
+
+        const tronweb = tron.tronWeb;
+        console.log("Amount Out >>>", amountOutResponse);
+        let contract = await tronweb.contract(SunSwapABI, 'TJ4NNy8xZEqsowCBhLvZ45LCqPdGjkET5j')
+        console.log("Contract", contract);
+
+        const { tokens, poolFees, poolVersions } = amountOutResponse
+
+        // added 3 hours in the timestamp
+        const date = new Date();
+        date.setHours(date.getHours() + 3);
+        const timestamp = date.getTime();
+        console.log(timestamp);
+
+
+        const tx = await contract.swapExactInput(
+          tokens,
+          poolVersions,
+          [poolVersions.length],
+          poolFees,
+          [amountIn, '1', address, timestamp]
+        ).send({ feeLimit: 10000 * 1e6, shouldPollResponse: true });
+
+        console.log("Tx", tx);
+      }
+    } catch (error) {
+      console.log("Error in the swapping contract", error);
+    }
+
+
+
+
+  }
+
   return (
     <div className="flex flex-col h-full">
       <h2 className="text-2xl font-bold mb-4">Send transactions with the Tron Defi Agent</h2>
@@ -114,6 +196,8 @@ export default function SendTransaction() {
       <Button onClick={() => setIsModalOpen(true)} className="w-full mb-4">
         Query Commands
       </Button>
+
+      <Button onClick={handleSunSwap}>Sun Swap</Button>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-fit bg-gray-800 text-white">
