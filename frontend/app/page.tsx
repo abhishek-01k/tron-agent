@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import SendTransaction from '@/components/send-transaction';
 import DeployContracts from '@/components/deploy-contracts';
-
+import { AskAgent } from '@/components/ask-agent';
 // Sidebar component
 const Sidebar = ({ activeItem, setActiveItem } : any) => {
   const menuItems = [
@@ -36,7 +36,6 @@ const Sidebar = ({ activeItem, setActiveItem } : any) => {
 }
 
 // Placeholder components for different transaction types
-const AskAgent = () => <div>Ask Agent Component</div>
 const ImageGenerator = () => <div>Image Generator Component</div>
 const DiscoverContract = () => <div>Discover Contract Component</div>
 const SearchData = () => <div>Search Data Component</div>
